@@ -14,8 +14,8 @@ const fileFormat = (url = "") => {
   return "file";
 };
 
-const transformImg = (url = "") => {
-return url
+const transformImage = (url = "") => {
+  return url
 }
 
 
@@ -31,4 +31,4 @@ const getLast7Days = () => {
 };
 
 
-export { fileFormat, transformImg, getLast7Days };
+export { fileFormat, transformImage, getLast7Days };

@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, } from "react-hook-form";
-import Api from "../utils/frontendApi";
 import toast from "react-hot-toast"
+import { useDispatch, useSelector } from "react-redux";
+import { login, setLoading} from "../redux/reducers/auth";
+import axios from "axios";
+import { API_BASE_URL } from "../config";
 
 function Login() {
+  const dispatch = useDispatch();
+  const { loading } = useSelector(state => state.auth)
   const {
     register,
     handleSubmit,
@@ -14,28 +19,32 @@ function Login() {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
 
   const onSubmit = async (data) => {
-    setLoading(true)
-    Api.loginUser(data)
-      .then((data) => {
-        toast.success("Logged in successfully!")
-        localStorage.setItem('token', data?.data?.token)
-        navigate('/')
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
-        setLoading(false)
+    dispatch(setLoading(true));
+    try {
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, data, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+      dispatch(login(res.data));
+      navigate("/");
+      toast.success("Logged in successfully");
+    } catch (error) {
+      console.log(error)
+      toast.error(error.response.data.message);
+      dispatch(setLoading(false));
+    } finally {
+      dispatch(setLoading(false));
+    }
   };
 
   return (
-    <div className="flex items-center justify-center C_hight">
-      <div className="w-full max-w-sm p-8  rounded-lg shadow-2xl">
+    <div className="flex items-center justify-center h-screen m_font">
+      <div className="w-full max-w-sm p-8  rounded-lg shadow-2xl border border-sky-800">
         <h2 className="text-2xl font-bold text-center  mb-6">Login</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -53,7 +62,7 @@ function Login() {
                   message: "Invalid email address",
                 },
               })}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border border-sky-800 focus:outline focus:outline-1 focus:outline-sky-700 rounded-md"
               placeholder="Enter your email"
             />
             {errors.email && (
@@ -74,7 +83,7 @@ function Login() {
                   message: "Password must have at least 6 characters",
                 },
               })}
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 border border-sky-800 focus:outline focus:outline-1 focus:outline-sky-700 rounded-md"
               placeholder="Enter your password"
             />
             {errors.password && (
@@ -84,7 +93,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="btn w-full text-xl"
+            className="btn p_font w-full btn-outline border border-sky-800 text-xl"
           >
             {loading ? (
               <span className="loading loading-spinner">Logging in...</span>

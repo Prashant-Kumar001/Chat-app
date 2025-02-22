@@ -187,6 +187,7 @@ export const validateRenamed = (req, res, next) => {
 };
 
 export const validateRequest = (req, res, next) => {
+  console.log(req.body)
   const body = Joi.object({
     userId: Joi.string()
       .regex(/^[0-9a-fA-F]{24}$/)
@@ -200,14 +201,12 @@ export const validateRequest = (req, res, next) => {
   const { error } = body.validate(req.body, { abortEarly: false });
 
   if (error) {
-    return ResponseHandler.error(
-      res,
-      400,
-      error.details.map((err) => err.message).join(", ")
-    );
+    return res.status(400).json({ message: error.details.map((err) => err.message).join(", ") });
   }
   next();
 };
+
+
 export const validateAcceptRequest = (req, res, next) => {
   const body = Joi.object({
     requestId: Joi.string()

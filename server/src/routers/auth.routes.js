@@ -13,6 +13,6 @@ import { validateUserInput, loginValidator } from "../validation/auth.validation
 router.post("/register", upload.single('image'), validateUserInput, register);
 router.post("/login", loginValidator, login);
 router.get("/logout", logout);
-router.get("/isLogin", protect, isLoginTrue);
+router.get("/me", protect, isLoginTrue);
 
 export default router;

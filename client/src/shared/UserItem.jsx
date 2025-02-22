@@ -1,6 +1,8 @@
 import React, { useState, memo } from "react";
 import AvatarCard from "./AvatarCard.jsx";
 import { RiAddLargeFill } from "react-icons/ri";
+import { Avatar } from "@mui/material";
+import { transformImage } from "../lib/features.js";
 
 const UserItem = ({
   user,
@@ -13,7 +15,7 @@ const UserItem = ({
   disable = false,
   className=""
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
+
 
   return (
     <div
@@ -21,10 +23,9 @@ const UserItem = ({
         }  transition duration-200 ${hover ? "hover:bg-gray-100" : ""}`}
     >
       <div className="flex items-center gap-3 w-full">
-        <AvatarCard avatar={user.avatar} name={user.name} size={size} />
+        <Avatar src={transformImage(user.avatar.secure_url)} alt={user.username} />
         <div className="flex flex-col flex-grow">
-          <h3 className={" font-semibold"}>{user.name}</h3>
-          <p className="text-gray-500 text-sm">{user.email}</p>
+          <h3 className={"text-black font-semibold"}>{user.username}</h3>
         </div>
       </div>
       <div>

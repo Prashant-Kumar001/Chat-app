@@ -8,8 +8,10 @@ import User from "../models/user.Model.js";
 export const protect = async (req, res, next) => {
   let token = null;
 
-  
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer ")
+  ) {
     token = req.headers.authorization.split(" ")[1];
   }
 
@@ -18,32 +20,81 @@ export const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return ResponseHandler.error(res, statusCodes.UNAUTHORIZED, "Not authorized, token missing, login required for this route"); 
+    return ResponseHandler.error(
+      res,
+      statusCodes.UNAUTHORIZED,
+      "Not authorized, token missing, login required for this route"
+    );
   }
-
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id).select("-password"); 
+    req.user = await User.findById(decoded.id).select("-password");
 
     if (!req.user) {
-      return ResponseHandler.error(res, statusCodes.UNAUTHORIZED, "User not found");
+      return ResponseHandler.error(
+        res,
+        statusCodes.UNAUTHORIZED,
+        "User not found"
+      );
     }
 
-    next(); 
+    next();
   } catch (error) {
-    console.error("Error verifying token:", error);
-    return ResponseHandler.error(res, statusCodes.UNAUTHORIZED, "Invalid token");
+
+    const metadata = {
+      timestamp: new Date().toISOString(),
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    }
+
+    console.log(error.message)
+    return ResponseHandler.error(
+      res,
+      statusCodes.UNAUTHORIZED,
+      error.message || "Not authorized, invalid or expired token",
+      error = null,
+      metadata 
+    );
   }
 };
 
-/**
- * Middleware to check Admin role
- */
+export const protectAdmin = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization?.startsWith("Bearer")) {
+    token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies && req.cookies.adminToken) {
+    token = req.cookies.adminToken;
+  }
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "No token, authorization denied. only admin can access" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const admin = await User.findById(decoded.id).select("-password");
+    req.admin = admin;
+    req.adminKey = process.env.ADMIN_SECRET_KEY;
+    next();
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Not authorized, invalid or expired token || only admin can access this route" });
+  }
+};
+
 export const adminOnly = (req, res, next) => {
-  if (req.user && req.user.role === "admin") {
-    next(); 
+  if (req.admin && req.admin.role === "admin" && req.adminKey.toString() === process.env.ADMIN_SECRET_KEY.toString()) {
+    next();
   } else {
-    return ResponseHandler.error(res, statusCodes.FORBIDDEN, "Access denied, admin only");
+    return ResponseHandler.error(
+      res,
+      statusCodes.FORBIDDEN,
+      "Access denied, admin only"
+    );
   }
 };

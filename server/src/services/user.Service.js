@@ -3,32 +3,10 @@ import { CustomError } from "../error.js";
 import mongoose from "mongoose";
 import Request from "../models/user.request.js";
 import Chat from "../models/user.chat.js";
+import { getOtherMember } from "../lib/helper.js";
 
-/**
- * Get all users with optional filters
- * @param {Object} filters - Optional filters (e.g., role, status)
- * @returns {Promise<Array>} - List of users
- */
-export const getAllUsers = async (page, limit) => {
-  const [allUsers, total] = await Promise.all([
-    User.find({})
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .sort({ createdAt: -1 })
-      .lean(),
-    User.countDocuments(),
-  ]);
-  if (allUsers.length === 0) {
-    throw new Error("users not found");
-  }
-  return { allUsers, total };
-};
 
-/**
- * Get a single user by ID
- * @param {String} userId - User's ID
- * @returns {Promise<Object>} - User data
- */
+
 export const getUserById = async (userId) => {
   const user = await User.findById(userId).select("-password"); // Exclude password
   if (!user) {
@@ -36,13 +14,6 @@ export const getUserById = async (userId) => {
   }
   return user;
 };
-
-/**
- * Update user details
- * @param {String} userId - User's ID
- * @param {Object} updateData - Fields to update
- * @returns {Promise<Object>} - Updated user data
- */
 
 export const updateUser = async (userId, updateData) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -65,12 +36,6 @@ export const updateUser = async (userId, updateData) => {
   return update;
 };
 
-/**
- * Delete a user (soft delete or permanent delete)
- * @param {String} userId - User's ID
- * @param {Boolean} softDelete - If true, marks the user as inactive instead of deleting
- * @returns {Promise<String>} - Success message
- */
 export const deleteUser = async (userId) => {
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new CustomError("Invalid user ID format", 400);
@@ -86,6 +51,9 @@ export const deleteUser = async (userId) => {
 };
 
 export const searchUsers = async (name) => {
+  if(!name) {
+    return await User.find()
+  }
   const users = await User.find({ username: { $regex: name, $options: "i" } });
   if (users.length === 0) {
     throw new CustomError(`User ${name} not found`, 404);
@@ -96,7 +64,7 @@ export const searchUsers = async (name) => {
 export const sendFriendRequest = async (sender, receiver) => {
   const user = await User.findById(sender);
   if (!user) {
-    throw new CustomError("User not found", 404).select("_id");
+    throw new CustomError("User not found", 404);
   }
   if (user._id.equals(receiver)) {
     throw new CustomError("You cannot send a friend request to yourself", 400);
@@ -137,9 +105,6 @@ export const acceptFriendRequest = async (requestId, status, me) => {
   if (!request) {
     throw new CustomError("Friend request not found", 404);
   }
-  console.log(me);
-  console.log(request);
-
   if (me._id.toString() !== request.receiver?._id.toString()) {
     throw new CustomError("You are not the receiver of this request", 403);
   }
@@ -163,12 +128,15 @@ export const acceptFriendRequest = async (requestId, status, me) => {
       Request.findByIdAndDelete(requestId),
     ]);
 
-    return { newChat, deleteRequest };
+    return { newChat, sender: request.receiver?.username, deleteRequest };
   }
 };
 
 export const getMyNotifications = async (userId) => {
-  const notifications = await Request.find({ receiver: userId, status: "pending" })
+  const notifications = await Request.find({
+    receiver: userId,
+    status: "pending",
+  })
     .populate({
       path: "sender",
       select: "username avatar",
@@ -178,4 +146,36 @@ export const getMyNotifications = async (userId) => {
     throw new CustomError("No notifications found", 200);
   }
   return notifications;
-}
+};
+
+export const getMyFriends = async (userId, chatId) => {
+  const Chats = await Chat.find({ members: userId, GroupChat: false }).populate({
+    path: "members",
+    select: "-password",
+  });
+  if (Chats.length === 0) {
+    throw new CustomError("No friends found", 200);
+  }
+  const friends = Chats?.map((item) => {
+    const otherMember = getOtherMember(item?.members, userId);
+    return {
+      _id: otherMember?._id,
+      username: otherMember?.username,
+      avatar: otherMember?.avatar?.secure_url,
+    };
+  });
+
+  if (chatId) {
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      throw new CustomError("Chat not found", 404);
+    }
+    const availableFiends = friends.filter(
+      (friend) => chat.members.filter((member) => member.toString() === friend._id.toString()).length > 0
+    );
+    console.log(availableFiends)
+    return availableFiends;
+  } else {
+    return friends;
+  }
+};

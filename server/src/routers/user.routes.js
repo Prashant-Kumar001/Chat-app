@@ -1,6 +1,5 @@
 import express from "express";
 import {
-  fetchUsers,
   fetchUserById,
   modifyUser,
   removeUser,
@@ -8,7 +7,8 @@ import {
   searchUser,
   SendRequest,
   acceptRequest,
-  notifyMe
+  notifyMe,
+  friends
 
 } from "../controllers/user.Controller.js";
 import { protect, adminOnly } from "../middleware/auth.Middleware.js";
@@ -20,10 +20,10 @@ router.use(protect);
 
 router.get("/me", getMyProfile);
 router.get("/search", searchUser);
-router.get("/all", adminOnly, fetchUsers);
 router.post('/request', validateRequest, SendRequest)
 router.put('/acceptRequest', validateAcceptRequest, acceptRequest)
 router.get('/notification', notifyMe)
+router.get('/friends', friends)
 router
   .route("/:id")
   .get(fetchUserById)

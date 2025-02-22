@@ -39,7 +39,7 @@ class ResponseHandler {
    * @param {Object} req - Request object for metadata (optional).
    */
   static error(res, statusCode = 500, message = "Something went wrong", error = null, metadata = {}) {
-    return this.sendResponse(res, statusCode, false, message, null, metadata);
+    return this.sendResponse(res, statusCode, false, message, error, metadata);
   }
 }
 

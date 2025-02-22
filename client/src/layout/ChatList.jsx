@@ -12,9 +12,10 @@ const ChatList = ({
     },
   ],
   handlerDeleteChat,
+  width
 }) => {
   return (
-    <div className="bg-white ">
+    <div className={`bg-white ${width} h-full overflow-y-auto`}>
       {chats.map((chat, index) => {
         const { avatar, name, _id, groupChat, members, date } = chat;
 

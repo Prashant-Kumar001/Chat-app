@@ -33,7 +33,7 @@ const handlerRequest = ({ _id, name, status }) => {
 
 export default function Notifications({ notifications, onClose }) {
   return (
-    <div className="absolute top-[45px] w-full max-w-[380px] right-0 px-4 py-6 space-y-4">
+    <div className="absolute z-50 top-[45px] w-full max-w-[380px] right-0 px-4 py-6 space-y-4">
       <div className="flex flex-col gap-2 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 rounded-lg p-2">
         <div className="flex justify-between">
           <h2 className="r_font ">notifications</h2>

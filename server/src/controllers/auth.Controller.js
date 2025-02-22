@@ -16,7 +16,7 @@ export const register = async (req, res) => {
     
 
     // Register user
-    const userData = await registerUser(username, email, password, file);
+    const userData = await registerUser(username, email, password, bio, file);
 
     // Metadata
     const metadata = {
@@ -95,7 +95,12 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     res.clearCookie("auth_token");
-    return ResponseHandler.success(res, statusCodes.OK, "Logout successful");
+    return res.status(200).json({
+      message: "Logout successful",
+      success: true,
+      data: null,
+      token: null,
+    })
   } catch (error) {
     return ResponseHandler.error(
       res,
@@ -125,11 +130,9 @@ export const isLoginTrue = async (req, res) => {
       metadata
     );
   } catch (error) {
-    console.error("IsLogin Error:", error);
     return ResponseHandler.error(
       res,
-      statusCodes.INTERNAL_SERVER_ERROR,
-      "Failed to check login status",
+      error.statusCode || statusCodes.INTERNAL_SERVER_ERROR,
       error.message
     );
   }

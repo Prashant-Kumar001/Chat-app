@@ -17,7 +17,7 @@ const DashBord = () => {
     toast.success('Search executed');
   }
   return (
-    <div className='h-[90vh] w-[80vw] overflow-scroll  HideScrollbar mx-auto '>
+    <div className='h-[100vh] overflow-scroll  HideScrollbar mx-auto w-full p-3'>
       <div className="flex w-full flex-col border-opacity-50 md:mt-0 mt-4  bg_blur ">
         <div className="w-full bg-gray-200  md:px-5 py-3 flex justify-around items-center">
           <MdAdminPanelSettings size={30} />
@@ -31,8 +31,7 @@ const DashBord = () => {
           <IconBtn icon={<Bell />} size='sm'  className='md:hidden block' />
         </div>
       </div>
-      <div className='divider'></div>
-      <div className="flex w-full flex-col border-opacity-50 md:mt-0 mt-4">
+      <div className="flex w-full flex-col border-opacity-50 md:mt-0 mt-4 ">
         <div className='flex flex-wrap gap-5 items-stretch justify-center md:justify-between'>
           <div className='p-5 w-full md:w-[60%] bg-gray-200 shadow-xl rounded-xl'>
             <h1 className='text-4xl font-bold mb-5 text-center md:text-left'>Last Message</h1>
@@ -43,9 +42,8 @@ const DashBord = () => {
           </div>
         </div>
       </div>
-      <div className='divider'></div>
       <div className='flex w-full flex-col border-opacity-50 md:mt-0 mt-4'>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 p-4 p_font'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 p_font'>
           <Widgets title=" Chats" value="45" Icon={MdGroups2} />
           <Widgets title=" Users" value="34" Icon={HiUsers} />
           <Widgets title=" Messages" value="65" Icon={MdMessage} />
@@ -63,7 +61,7 @@ const Widgets = ({ title, value, Icon }) => {
   return (
     <div className="w-full ">
       <div className="bg-gray-300 p-6 gap-3 rounded-2xl flex flex-col items-center justify-center shadow-xl ">
-        <p className="text-lg border-4 rounded-full flex items-center justify-center border-black w-16 h-16">{value}</p>
+        <p className="text-lg border-4 rounded-full flex items-center justify-center border-black w-12 h-12">{value}</p>
         <div className='flex gap-2 items-center'>
           <Icon size={30} />
           <h2 className="text-xl font-normal ">{title}</h2>

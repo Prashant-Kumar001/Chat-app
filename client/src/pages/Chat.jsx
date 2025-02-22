@@ -22,10 +22,9 @@ const Chat = () => {
   const { _id } = useParams();
   const [usersMessage, setUserMessage] = useState(sampleMessages);
   const [message, setMessage] = useState("");
-  const [audio, setAudio] = useState(null);
-  const [video, setVideo] = useState(null);
-  const [image, setImage] = useState(null);
-  
+  const [audio, setAudio] = useState("");
+  const [video, setVideo] = useState("");
+  const [image, setImage] = useState("");
 
   const handlerMessage = (e) => {
     e.preventDefault();
@@ -39,7 +38,7 @@ const Chat = () => {
 
   if (!_id || loadCurrentUserChat.length === 0) {
     return (
-      <div className="C_hight w-full text-center flex items-center justify-center bg-gray-200">
+      <div className=" w-full text-center flex items-center justify-center bg-gray-200">
         <h1>Please select a user to chat with</h1>
       </div>
     );

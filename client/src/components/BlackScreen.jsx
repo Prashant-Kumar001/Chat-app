@@ -1,9 +1,10 @@
 import React from "react";
 
-const BlackScreen = ({ top = 45, height = "C_hight" }) => {
+const BlackScreen = ({ top = 53, height = "100" }) => {
   return (
     <div
-      className={`absolute top-[${top}px] left-0 w-full h-[${height}vh] bg-black opacity-50`}
+      className="absolute left-0 w-full bg-black opacity-50 z-50 transition-all duration-300"
+      style={{ top: `${top}px`, height: `${height}vh` }}
     ></div>
   );
 };

@@ -2,25 +2,48 @@ const chatData = [
   {
     _id: "1",
     name: "Dana",
+    username: "Dana",
+    friends: 20,
     LastMessage: "Hey, how's it going?",
     date: "2024-02-02T10:30:00Z",
     avatar: ["https://randomuser.me/api/portraits/women/45.jpg"], // Fake avatar
-    members: ["1", "2"],
+    members: [{
+      userId: "122",
+      avatar: ["https://randomuser.me/api/portraits/women/45.jpg"],
+    }, {
+      userId: "123",
+      avatar: ["https://randomuser.me/api/portraits/men/32.jpg"],
+    }],
     isOnline: true,
     groupChat: false,
     sameSender: false,
     newMessage: 2,
     index: 1,
+    creator: {
+      name: "Dana",
+      avatar: ["https://randomuser.me/api/portraits/women/45.jpg"], // Fake avatar
+    },
     handlerDeleteChatOpen: null,
   },
   {
     _id: "2",
     name: "Bob",
+    username: "Bob",
+    friends: 15,
     LastMessage: "Let's catch up later!",
     date: "2024-02-02T11:00:00Z",
     avatar: ["https://randomuser.me/api/portraits/men/32.jpg"], // Fake avatar
     isOnline: false,
-    members: ["1", "2"],
+    members: [
+      {
+        userId: "122",
+        avatar: ["https://randomuser.me/api/portraits/women/45.jpg"],
+      },
+      {
+        userId: "123",
+        avatar: ["https://randomuser.me/api/portraits/men/32.jpg"],
+      },
+    ],
     groupChat: false,
     sameSender: true,
     newMessage: 0,
@@ -30,20 +53,28 @@ const chatData = [
   {
     _id: "3",
     name: "Study Group",
+    username: "Study Group",
+    friends: 10,
     LastMessage: "Meeting at 5 PM",
     date: "2024-02-01T18:00:00Z",
     avatar: [
       "https://randomuser.me/api/portraits/men/50.jpg",
-      "https://randomuser.me/api/portraits/women/29.jpg",
-      "https://randomuser.me/api/portraits/men/10.jpg",
-      "https://randomuser.me/api/portraits/men/10.jpg",
-      "https://randomuser.me/api/portraits/men/10.jpg",
-      "https://randomuser.me/api/portraits/men/10.jpg",
-      "https://randomuser.me/api/portraits/men/10.jpg",
-      "https://randomuser.me/api/portraits/men/10.jpg",
     ], // Fake avatars for group chat
     isOnline: true,
-    members: ["1", "2", "3"],
+    members: [
+      {
+        userId: "122",
+        avatar: ["https://randomuser.me/api/portraits/women/45.jpg"],
+      },
+      {
+        userId: "123",
+        avatar: ["https://randomuser.me/api/portraits/men/32.jpg"],
+      },
+      {
+        userId: "124",
+        avatar: ["https://randomuser.me/api/portraits/women/29.jpg"],
+      }
+    ],
     groupChat: true,
     sameSender: false,
     newMessage: 5,
@@ -280,7 +311,7 @@ export const sampleMessages = [
         messageId: "msg14",
         senderId: "Dana",
         timestamp: "2024-10-02T10:40:00Z",
-       text: "watch this video you would feel good 😍😍😍",
+        text: "watch this video you would feel good 😍😍😍",
         read: true,
         type: "attachment",
         reactions: [

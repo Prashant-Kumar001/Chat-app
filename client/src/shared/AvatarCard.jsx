@@ -18,7 +18,6 @@ const AvatarCard = ({
     el: "w-46 h-46 text-xl",
   };
 
-
   // Get the first letter of the name (fallback for missing image)
   const initials = name
     .split(" ")
@@ -36,7 +35,7 @@ const AvatarCard = ({
               key={index}
               src={img}
               alt={alt}
-              className={`rounded-full border-2 border-white shadow-md ${sizeClasses[size]}`}
+              className={`rounded-full border-2 border-white shadow-md object-contain ${sizeClasses[size]}`}
             />
           ))}
 

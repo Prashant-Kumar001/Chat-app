@@ -25,9 +25,9 @@ const AdminLayout = ({ children }) => {
       <div className="md:hidden fixed top-2 right-4 z-50">
         <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
           {isMenuOpen ? (
-            <MdClose className="text-white bg-gray-900 p-2 rounded-full" size={30} />
+            <MdClose className="text-white  p-2 rounded-full" size={30} />
           ) : (
-            <MdOutlineMenu className="text-white bg-gray-900 p-2 rounded-full" size={30} />
+            <MdOutlineMenu className="text-white p-2 rounded-full" size={30} />
           )}
         </button>
       </div>

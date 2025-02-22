@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import UserItem from "../shared/UserItem";
 import sampleData from "../data/sampleData.js";
 import { UserRoundPlus, UserRoundX } from "lucide-react";
 import { MdClose } from "react-icons/md";
 import toast from "react-hot-toast";
+import { Button } from "@mui/material";
 
 const NewGroup = ({ top = 48, isShow, onClose, handlerAddToGroup }) => {
   const [members, setMembers] = useState(sampleData);
@@ -12,79 +13,82 @@ const NewGroup = ({ top = 48, isShow, onClose, handlerAddToGroup }) => {
 
   const handleAddToGroup = (user) => {
     setSelectedUsers((prev) => {
-      const usersArray = Array.from(prev);
-      const userIndex = usersArray.findIndex((obj) => obj.id === user._id);
-      if (userIndex !== -1) {
-        const updatedUsers = usersArray.filter((obj) => obj.id !== user._id);
-        setMembers((prevMembers) =>
-          prevMembers.map((obj) =>
-            obj._id === user._id ? { ...obj, isGroup: false } : obj
-          )
-        );
-        return new Set(updatedUsers);
+      const newSelected = new Set(prev);
+      if (newSelected.has(user._id)) {
+        newSelected.delete(user._id);
       } else {
-        const newUser = { user: user.name, id: user._id, isGroup: true };
-        const updatedUsers = [...usersArray, newUser];
-        setMembers((prevMembers) =>
-          prevMembers.map((obj) =>
-            obj._id === user._id ? { ...obj, isGroup: true } : obj
-          )
-        );
-        return new Set(updatedUsers);
+        newSelected.add(user._id);
       }
+
+      setMembers((prevMembers) =>
+        prevMembers.map((obj) =>
+          obj._id === user._id ? { ...obj, isGroup: newSelected.has(user._id) } : obj
+        )
+      );
+
+      return newSelected;
     });
   };
 
-
+  const handleCreateGroup = () => {
+    if (!groupName.trim()) {
+      toast.error("Please enter a group name");
+      return;
+    }
+    toast.success(`Group "${groupName}" created successfully!`);
+    setGroupName("");
+    setSelectedUsers(new Set());
+  };
 
   return (
     <div
-      className={`absolute ${
-        isShow
-          ? `top-[45px] opacity-100`
-          : "top-[-900px] opacity-0"
-      } w-full max-w-[383.8px] bg-gradient-to-r from-gray-600 border-l-4 via-gray-800 to-gray-950 C_hight HideScrollbar p-4  newGroup right-0 px-4 py-6 space-y-4 transition-all duration-300 ease-in-out`}
+      className={`absolute right-0 left-0 w-full max-w-[384px] mx-auto z-50 bg-white text-black shadow-lg p-5 rounded-lg transition-all duration-300 ease-in-out ${isShow ? "translate-y-32 opacity-100" : "-translate-y-[200%] opacity-0"
+        }`}
+      style={{ top: `${top}px` }}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between items-center">
-          <h2 className="r_font mb-2">Group</h2>
-          <MdClose
-            size={22}
-            className="cursor-pointer hover:animate-spin"
-            onClick={onClose}
+      {/* Header */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold">Create Group</h2>
+        <MdClose
+          size={22}
+          className="cursor-pointer hover:rotate-90  transition-transform duration-300"
+          onClick={onClose}
+        />
+      </div>
+
+      {/* Group Name Input */}
+      <div className="flex gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Group Name"
+          className="w-full p-2 rounded-lg border  placeholder-gray-400 focus:outline-none"
+          value={groupName}
+          onChange={(e) => setGroupName(e.target.value)}
+        />
+        <Button variant="outlined" loading={false} onClick={handleCreateGroup} >
+          create
+        </Button>
+      </div>
+
+      {/* User List */}
+      <div className="max-h-64 overflow-y-auto  HideScrollbar space-y-2">
+        {members.map((user) => (
+          <UserItem
+            key={user._id}
+            user={user}
+            handler={() => handleAddToGroup(user)}
+            addIcon={
+              user.isGroup ? (
+                <UserRoundX size={20} color="red" />
+              ) : (
+                <UserRoundPlus size={20} color="green" />
+              )
+            }
+            hover={false}
+            textColor="text-gray-100"
+            size="sm"
           />
-        </div>
-        <div className="flex gap-3">
-          <input
-            type="text"
-            placeholder="Group Name"
-            className="p-2 rounded-lg w-full"
-            value={groupName}
-            onChange={(e) => setGroupName(e.target.value)}
-          />
-          <button className="rounded-lg bg-gray-950 px-3">Create</button>
-        </div>
-        <div>
-          <div className="flex flex-col gap-1 HideScrollbar">
-            {members?.map((user) => (
-              <UserItem
-                user={user}
-                key={user._id}
-                handler={() => handleAddToGroup(user)}
-                addIcon={
-                  user?.isGroup ? (
-                    <UserRoundX size={20} color="red" />
-                  ) : (
-                    <UserRoundPlus size={20} color="green" />
-                  )
-                }
-                hover={false}
-                textColor="text-gray-100"
-                size="sm"
-              />
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

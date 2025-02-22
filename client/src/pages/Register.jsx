@@ -5,6 +5,23 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
 import schema from "../utils/validationSchema";
 import Api from "../utils/frontendApi";
+import { Button, CircularProgress } from "@mui/material";
+import { styled } from '@mui/material/styles';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
 
 function Register() {
   const [isLoading, setLoading] = useState(false);
@@ -24,14 +41,11 @@ function Register() {
       setValue("image", file);
     }
   };
+
   const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    console.log("Form Data Before Sending:", data);
-
     setLoading(true);
-
-    // Convert form data to FormData for file upload
     const formData = new FormData();
     formData.append("username", data.username);
     formData.append("email", data.email);
@@ -41,7 +55,7 @@ function Register() {
       formData.append("image", data.image);
     }
 
-    Api.registerUser(formData) // Ensure API supports FormData
+    Api.registerUser(formData)
       .then((response) => {
         if (response.success) {
           toast.success("Registration successful!");
@@ -59,101 +73,72 @@ function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md p-8 rounded-lg shadow-lg ">
-        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Image Upload Section */}
-          <div className="mb-4 flex flex-col items-center relative">
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-32 h-32 object-cover rounded-full"
-              />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              id="image"
-              className="hidden"
-              onChange={handleImageChange}
+    <div className="flex items-center justify-center min-h-screen p-2 bg-gray-100">
+      <div className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-lg border border-gray-300 items-center flex gap-4">
+        <div className="flex flex-col items-center w-1/3">
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-40 h-40 object-cover rounded-full border border-gray-300 shadow-md"
             />
-            <button
-              type="button"
-              onClick={() => document.getElementById("image").click()}
-              className="mt-2 px-4 py-1  rounded-md"
-            >
-              Upload Image
-            </button>
-            <p className="text-red-500 text-sm">{errors.image?.message}</p>
-          </div>
-
-          {/* Other Input Fields */}
-          {[
-            {
-              label: "Username",
-              name: "username",
-              type: "text",
-              placeholder: "Enter your username",
-            },
-            {
-              label: "Email",
-              name: "email",
-              type: "email",
-              placeholder: "Enter your email",
-            },
-            {
-              label: "Bio",
-              name: "bio",
-              type: "text",
-              placeholder: "Enter your bio",
-            },
-            {
-              label: "Password",
-              name: "password",
-              type: "password",
-              placeholder: "Enter your password",
-            },
-          ].map(({ label, name, type, placeholder }) => (
-            <div key={name} className="mb-4">
-              <label htmlFor={name} className="block font-medium">
-                {label}
-              </label>
-              <input
-                type={type}
-                id={name}
-                {...register(name)}
-                className="w-full p-2 border rounded-md"
-                placeholder={placeholder}
-              />
-              <p className="text-red-500 text-sm">{errors[name]?.message}</p>
+          ) : (
+            <div className="w-40 h-40 flex items-center justify-center rounded-full bg-gray-200 border border-gray-300">
+              <span className="text-gray-500">No Image</span>
             </div>
-          ))}
-
-          <button
-            type="submit"
-            className="btn btn-outline w-full"
-            disabled={isLoading} // Disable button while loading
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            id="image"
+            className="hidden"
+            onChange={handleImageChange}
+          />
+          <Button
+            component="label"
+            onClick={() => document.getElementById("image").click()}
           >
-            {isLoading ? (
-              <>
-                <span className="loading loading-spinner loading-lg"></span>
-                Processing...
-              </>
-            ) : (
-              "Register"
-            )}
-          </button>
-        </form>
+            <CloudUploadIcon />
+          </Button>
 
-        <div className="mt-4 text-center">
-          <p className="text-sm">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-500 hover:underline">
-              Login
-            </Link>
-          </p>
+          <p className="text-red-500 text-sm mt-2">{errors.image?.message}</p>
+        </div>
+
+        {/* Input Fields Section */}
+        <div className="flex flex-col w-2/3 ">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {[
+              { label: "Username", name: "username", type: "text", placeholder: "Enter your username" },
+              { label: "Name", name: "name", type: "text", placeholder: "Enter your name" },
+              { label: "Email", name: "email", type: "email", placeholder: "Enter your email" },
+              { label: "Bio", name: "bio", type: "text", placeholder: "Enter your bio" },
+              { label: "Password", name: "password", type: "password", placeholder: "Enter your password" },
+            ].map(({ label, name, type, placeholder }) => (
+              <div key={name}>
+                <label htmlFor={name} className="block font-medium text-gray-700">{label}</label>
+                <input
+                  type={type}
+                  id={name}
+                  {...register(name)}
+                  className="w-full p-3 outline outline-1 outline-blue-400 rounded-md focus:ring-1 focus:ring-blue-500"
+                  placeholder={placeholder}
+                />
+                <p className="text-red-500 text-sm">{errors[name]?.message}</p>
+              </div>
+            ))}
+            <Button type="submit" variant="outlined" color="primary" fullWidth disabled={isLoading}>
+              {isLoading ? <CircularProgress size={24} /> : "Register"}
+            </Button>
+          </form>
+
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link to="/login" className="text-blue-500 hover:underline">
+                Login
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

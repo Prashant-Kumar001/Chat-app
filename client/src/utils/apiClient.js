@@ -8,7 +8,6 @@ class ApiClient {
     // Request Interceptor
     this.client.interceptors.request.use(
       (config) => {
-        console.log(`Request: ${config.method.toUpperCase()} ${config.url}`);
         return config;
       },
       (error) => Promise.reject(error)
@@ -30,7 +29,11 @@ class ApiClient {
   async request(method, endpoint, data = {}, headers = {}) {
     try {
       const response = await this.client({ method, url: endpoint, data, headers });
-      return response.data;
+      return {
+        success: true,
+        message: response.data.message,
+        user: response.data.data,
+      }
     } catch (error) {
       return { success: false, message: error.response?.data?.message || error.message };
     }

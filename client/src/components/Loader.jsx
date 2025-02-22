@@ -2,7 +2,7 @@ import React from "react";
 
 const Loader = () => {
   return (
-    <div className="container C_hight  mx-auto grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-[30%,45%,1fr] ">
+    <div className="container h-screen  mx-auto grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-[30%,45%,1fr] ">
       {/* Middle Content Skeleton */}
       <div className="grid grid-rows-10 gap-2">
         {Array.from({ length: 10 }).map((_, index) => (

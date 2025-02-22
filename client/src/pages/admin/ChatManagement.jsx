@@ -1,69 +1,99 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../shared/Table";
+import { Avatar, Skeleton, Stack } from "@mui/material";
 import AvatarCard from "../../shared/AvatarCard";
-
-const chats = [
-  {
-    id: "1",
-    avatar: ["https://randomuser.me/api/portraits/men/86.jpg"],
-    name: "John Doe",
-    totalMembers: "10",
-    members: [
-      {
-        avatar: ["https://randomuser.me/api/portraits/men/86.jpg"],
-        name: "Jane Doe",
-      },
-      {
-        avatar: ["https://randomuser.me/api/portraits/men/55.jpg"],
-        name: "Alice Doe",
-      },
-      {
-        avatar: ["https://randomuser.me/api/portraits/men/30.jpg"],
-        name: "Bob Doe",
-      },
-    ],
-    totalMessages: "500",
-    createdBy: {
-      avatar: ["https://randomuser.me/api/portraits/men/86.jpg"],
-      name: "Admin",
-    },
-  },
-];
-
+import chatData from "../../data/sampleData";
+import AvatarGroup from "@mui/material/AvatarGroup";
 const ChatManagement = () => {
-  const [AllChats, setChats] = useState([]); // ✅ Fix: Initialize as empty array
+  const columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      headerClassName: "table-header",
+      width: 100,
+    },
+    {
+      field: "avatar",
+      headerName: "Avatar",
+      headerClassName: "table-header",
+      width: 150,
+      display: "flex",
+      renderCell: (params) => (
+          <Avatar alt={params.row.name} src={params.row.avatar} />
+      ),
+    },
 
+    {
+      field: "name",
+      headerName: "Name",
+      headerClassName: "table-header",
+      width: 150,
+    },
+    {
+      field: "totalMembers",
+      headerName: "Total Members",
+      headerClassName: "table-header",
+      width: 120,
+    },
+    {
+      field: "members",
+      headerName: "Members",
+      headerClassName: "table-header",
+      width: 150,
+      display: "flex",
+      renderCell: (params) => {
+        return <AvatarCard size="sm" avatar={params.row.members} />;
+      },
+    },
+    {
+      field: "totalMessages",
+      headerName: "Total Messages",
+      headerClassName: "table-header",
+      width: 120,
+    },
+    {
+      field: "creator",
+      headerName: "Created By",
+      headerClassName: "table-header",
+      width: 250,
+      renderCell: (params) => (
+        <Stack direction="row" alignItems="center" spacing={"1rem"}>
+          <Avatar alt={params.row.creator.name} src={params.row.creator.avatar} />
+          <span>{params.row.creator.name}</span>
+        </Stack>
+      ),
+    },
+  ];
+
+
+
+  const [rows, setRows] = useState([]);
   useEffect(() => {
-    setChats(
-      chats.map((data) => ({
-        ...data,
-        avatar: <AvatarCard avatar={data.avatar} name={data.name} size="sm" />,
-        members: data.members.map((member) => (
-          <AvatarCard key={member.name} avatar={member.avatar} name={member.name} size="sm" />
-        )),
-        createdBy: <AvatarCard avatar={data.createdBy.avatar} name={data.createdBy.name} size="sm" />,
-      }))
+    setRows(
+      chatData.map((row, index) => {
+        return {
+          id: row._id,
+          avatar: row.avatar,
+          name: row.name,
+          groupChat: row.groupChat ? "Yes" : "No",
+          totalMembers: row.members.length,
+          members: row.members.map(({ avatar }) => avatar),
+          totalMessages: row.newMessage,
+          creator: {
+            name: row.name,
+            avatar: row.avatar[0],
+          },
+        };
+      })
     );
   }, []);
 
-  console.log(AllChats);
 
-  const columns = [
-    { title: "ID", key: "id", width: "120px" },
-    { title: "Avatar", key: "avatar", width: "200px" },
-    { title: "Name", key: "name", width: "200px" },
-    { title: "Total Members", key: "totalMembers", width: "150px" },
-    { title: "Members", key: "members", width: "400px" }, // ✅ No need for `renderCell`, already formatted in state
-    { title: "Total Messages", key: "totalMessages", width: "150px" },
-    { title: "Creator", key: "createdBy", width: "250px" }, // ✅ Fixed key
-  ];
+
 
   return (
-    <div className="container w-full h-screen flex flex-col items-center justify-center">
-      <div className="h-[90vh] w-[80vw] overflow-scroll">
-        <Table heading={"All Chats"} columns={columns} rows={AllChats} /> 
-        <AvatarCard avatar={AllChats?.members}  />
-      </div>
+    <div className=" container w-full h-screen flex flex-col items-center justify-center">
+      <Table heading={"All Users"} columns={columns} rows={rows} />
     </div>
   );
 };

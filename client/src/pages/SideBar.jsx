@@ -33,7 +33,7 @@ const SideBar = () => {
     ];
 
     return (
-        <div className="h-screen  relative  p-2 flex flex-col justify-between">
+        <div className="h-screen relative p-2 flex flex-col justify-between bg-white">
             <div>
                 <h2 className="text-2xl font-bold mb-6 text-left">ADMIN</h2>
                 <nav className="flex flex-col gap-4 p_font">

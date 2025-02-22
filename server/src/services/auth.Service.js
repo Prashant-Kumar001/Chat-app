@@ -4,13 +4,19 @@ import { uploadFileToCloudinary } from "../utils/Cloudinary.js";
 import { CustomError } from "../error.js";
 
 // Register User
-export const registerUser = async (username, email, password, file) => {
+export const registerUser = async (username, email, password, bio, file) => {
   const local_filePath = file.path;
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    removeLocalFile(local_filePath);
-    throw new CustomError("user with this Email is already exists", 409);
+  const [usernameExists, emailExists] = await Promise.all([
+    User.findOne({ username }),
+    User.findOne({ email }),
+  ])
+
+  if (usernameExists) {
+    throw new CustomError("user with this Username is already exists", 400);
+  }
+  if(emailExists) {
+    throw new CustomError("user with this Email is already exists", 400);
   }
 
   let cloudinary = {
@@ -30,13 +36,15 @@ export const registerUser = async (username, email, password, file) => {
   } finally {
     removeLocalFile(local_filePath);
   }
-  console.log(cloudinary);
+
+
 
   const user = await User.create({
     username,
     email,
     password,
     avatar: cloudinary,
+    bio,
   });
 
   return { user };
@@ -60,4 +68,4 @@ export const isLogin = async (user) => {
   return isLoggedIn;
 };
 
-export const searchUser = async () => {};
+export const searchUser = async () => { };
